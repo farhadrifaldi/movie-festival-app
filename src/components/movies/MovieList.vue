@@ -5,7 +5,7 @@
   />
   <VRow>
     <VCol
-      v-for="data in SAMPLE_DATA_COLLECTIONS"
+      v-for="data in movies"
       :key="data.id"
       cols="3"
     >
@@ -23,14 +23,27 @@
 </template>
 
 <script setup lang="ts">
-import { SAMPLE_DATA_COLLECTIONS, type movie } from "@/types/movie";
+import { ref, onMounted } from 'vue'
+import { useAppStore } from '@/stores'
+import { type movie } from '@/types/movie' // Corrected import path
 
-const openDetail = ref(false);
-const movieDetail = ref<movie | undefined>(undefined);
+const store = useAppStore()
+const openDetail = ref(false)
+const movieDetail = ref<movie | undefined>(undefined)
+const movies = ref<movie[]>([])
+
+onMounted(async () => {
+  await store.fetchMovies() // Fetch movies from Supabase
+  movies.value = store.getMovies // Update local movies with fetched data
+})
 
 function onOpenDetail(id?: string): void {
-  console.log("open detail:", id);
-  openDetail.value = true;
-  movieDetail.value = SAMPLE_DATA_COLLECTIONS.find((v) => v?.id === id);
+  console.log("open detail:", id)
+  openDetail.value = true
+  movieDetail.value = movies.value.find((v: movie) => v?.id === id) // Explicitly typed parameter
 }
 </script>
+
+<style scoped>
+/* Add any necessary styles here */
+</style>

@@ -32,7 +32,7 @@
           <div class="d-flex justify-space-between">
             <div>
               <VChip
-                v-for="genre in data?.genres"
+                v-for="genre in data?.genres.split(',')"
                 :key="genre"
                 color="primary"
                 size="small"
@@ -61,7 +61,7 @@
           </p>
           <VRow>
             <VCol
-              v-for="artist in data?.artists"
+              v-for="artist in data?.artists.split(',')"
               :key="artist"
               cols="3"
               class="d-flex align-center"
