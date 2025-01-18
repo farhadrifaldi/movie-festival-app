@@ -6,6 +6,7 @@ import Layouts from 'vite-plugin-vue-layouts'
 import Vue from '@vitejs/plugin-vue'
 import VueRouter from 'unplugin-vue-router/vite'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+import vueDevTools from 'vite-plugin-vue-devtools'
 
 // Utilities
 import { defineConfig } from 'vite'
@@ -46,12 +47,13 @@ export default defineConfig({
     }),
     Fonts({
       google: {
-        families: [ {
+        families: [{
           name: 'Roboto',
           styles: 'wght@100;300;400;500;700;900',
         }],
       },
     }),
+    vueDevTools(),
   ],
   define: { 'process.env': {} },
   resolve: {
