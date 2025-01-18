@@ -12,6 +12,7 @@ declare module 'vue' {
     MovieCard: typeof import('./components/movies/MovieCard.vue')['default']
     MovieDetail: typeof import('./components/movies/MovieDetail.vue')['default']
     MovieList: typeof import('./components/movies/MovieList.vue')['default']
+    MovieNoData: typeof import('./components/movies/MovieNoData.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
