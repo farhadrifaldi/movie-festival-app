@@ -15,11 +15,15 @@
       />
     </VCol>
   </VRow>
-  <div class="d-flex justify-center">
+  <div
+    v-if="!isNoData"
+    class="d-flex justify-center"
+  >
     <VBtn :loading="false">
       Load More
     </VBtn>
   </div>
+  <MovieNoData v-if="isNoData" />
 </template>
 
 <script setup lang="ts">
@@ -31,6 +35,7 @@ const store = useAppStore()
 const openDetail = ref(false)
 const movieDetail = ref<movie | undefined>(undefined)
 const movies = ref<movie[]>([])
+const isNoData = computed(() => movies.value.length < 1)
 
 onMounted(async () => {
   await store.fetchMovies() // Fetch movies from Supabase
