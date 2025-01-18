@@ -71,7 +71,6 @@ async function fetch(): Promise<void> {
 }
 
 function onOpenDetail(id?: string): void {
-  console.log("open detail:", id)
   openDetail.value = true
   movieDetail.value = movies.value.find((v: movie) => v?.id === id) // Explicitly typed parameter
 }
