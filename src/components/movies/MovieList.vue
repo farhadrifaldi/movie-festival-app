@@ -59,7 +59,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, nextTick } from 'vue'
-import { useMovieStore } from '@/stores/movie'; // Updated import
+import { useMovieStore } from '@/stores'; // Updated import
 import { MovieFilter, type movie } from '@/types/movie'; // Corrected import path
 
 const FILTER_LIST = Object.values(MovieFilter)
