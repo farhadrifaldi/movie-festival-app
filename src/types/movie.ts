@@ -9,6 +9,8 @@ export interface movie {
   url: string;
   created_at: string;
   release_date?: string;
+  rating?: number;
+  view_count?: number;
 }
 
 export const SAMPLE_DATA: movie = {

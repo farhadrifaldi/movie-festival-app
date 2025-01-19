@@ -34,10 +34,20 @@
     </VCol>
   </VRow>
   <div
-    v-if="!isNoData"
+
     class="d-flex justify-center mt-10"
   >
-    <VBtn :loading="false">
+    <VProgressCircular
+      v-if="store.getLoading && movies.length <= 0"
+      indeterminate
+      :size="100"
+    />
+    <VBtn
+      v-if="!isNoData"
+      :loading="store.getLoading"
+      :disabled="store.getMovieAllLoaded"
+      @click="loadMore"
+    >
       Load More
     </VBtn>
   </div>
@@ -63,6 +73,7 @@ const movies = ref<movie[]>([])
 
 const search = ref<string>("")
 const filterBy = ref<string>(filterList[0])
+const page = ref<number>(1)
 
 const isNoData = computed(() => movies.value.length < 1)
 
@@ -71,13 +82,20 @@ onMounted(async () => {
 })
 
 async function fetch(): Promise<void> {
-  await store.fetchMovies(search.value) // Fetch movies from Supabase
+  await store.fetchMovies({search: search.value, page: page.value}) // Fetch movies from Supabase
   movies.value = store.getMovies // Update local movies with fetched data
 }
 
 function onOpenDetail(id?: string): void {
   openDetail.value = true
   movieDetail.value = movies.value.find((v: movie) => v?.id === id) // Explicitly typed parameter
+}
+
+function loadMore(): void {
+  page.value++
+  nextTick((): void => {
+    fetch() // fetch after reactive
+  })
 }
 </script>
 

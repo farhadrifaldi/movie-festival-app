@@ -10,7 +10,10 @@
         <p style="margin-bottom: 5px; height: 50px; overflow: hidden; text-overflow: ellipsis;">
           {{ data?.title }}
         </p>
-        <div style="height: 25px; flex-wrap: nowrap; display: flex;">
+        <div
+          v-if="data?.genres"
+          style="height: 25px; flex-wrap: nowrap; display: flex;"
+        >
           <VChip
             v-for="genre in data?.genres.split(',')"
             :key="genre"
