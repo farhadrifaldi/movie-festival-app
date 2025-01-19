@@ -1,82 +1,120 @@
 <template>
   <div class="pa-4 text-center">
-    <v-dialog
+    <VDialog
       v-model="model"
       max-width="800"
+      scrollable
     >
-      <v-card>
-        <VHover v-slot="{ isHovering, props: hoverProps }">
-          <VCard v-bind="hoverProps">
-            <VImg :src="data?.image" />
-            <VOverlay
-              :model-value="!!isHovering"
-              class="align-center justify-center"
-              scrim="#036358"
-              contained
+      <template #default>
+        <VCard>
+          <div
+            style="height: 850px;"
+          >
+            <VHover v-slot="{ isHovering, props: hoverProps }">
+              <VCard v-bind="hoverProps">
+                <VImg :src="data?.image" />
+                <VOverlay
+                  :model-value="!!isHovering"
+                  class="align-center justify-center"
+                  scrim="#036358"
+                  contained
+                >
+                  <VHover v-slot="{ isHovering: isHovering2, props: props2 }">
+                    <VBtn
+                      :href="data?.url"
+                      target="_blank"
+                      variant="flat"
+                      icon="mdi-play"
+                      size="100"
+                      :color="isHovering2 ? 'red' : ''"
+                      v-bind="props2"
+                    />
+                  </VHover>
+                </VOverlay>
+              </VCard>
+            </VHover>
+            <div
+              class="px-10 py-5"
             >
-              <VHover v-slot="{ isHovering: isHovering2, props: props2 }">
-                <VBtn
-                  :href="data?.url"
-                  target="_blank"
-                  variant="flat"
-                  icon="mdi-play"
-                  size="100"
-                  :color="isHovering2 ? 'red' : ''"
-                  v-bind="props2"
+              <div class="d-flex justify-space-between">
+                <div>
+                  <VChip
+                    v-for="genre in data?.genres.split(',')"
+                    :key="genre"
+                    color="primary"
+                    size="small"
+                    :style="{ marginRight: '5px' }"
+                  >
+                    {{ genre }}
+                  </VChip>
+                </div>
+                <div>
+                  <VChip variant="text">
+                    <VIcon
+                      icon="mdi-eye-circle-outline"
+                      class="mr-1"
+                    />{{ data?.view_count }}
+                  </VChip>
+                  <VChip variant="text">
+                    <VIcon
+                      icon="mdi-clock-outline"
+                      class="mr-1"
+                    />{{ duration }}
+                  </VChip>
+                </div>
+              </div>
+              <div class="d-flex justify-space-between">
+                <p class="text-h5 mt-3 w-66">
+                  {{ data?.title }}
+                </p>
+                <VRating
+                  v-if="data?.rating && data.rating > 0"
+                  hover
+                  :length="5"
+                  :size="32"
+                  :model-value="data?.rating"
+                  active-color="warning"
                 />
-              </VHover>
-            </VOverlay>
-          </VCard>
-        </VHover>
-        <VCardItem>
-          <div class="d-flex justify-space-between">
-            <div>
-              <VChip
-                v-for="genre in data?.genres.split(',')"
-                :key="genre"
-                color="primary"
-                size="small"
-                :style="{ marginRight: '5px' }"
+              </div>
+              <VDivider class="my-5" />
+              <p class="font-weight-thin">
+                {{ movieDesc }}
+              </p>
+              <div
+                v-if="data?.description && data.description.length > 500"
+                class="d-flex justify-center"
               >
-                {{ genre }}
-              </VChip>
+                <VBtn
+                  variant="text"
+                  class="text-center"
+                  @click="toggleReadMore"
+                >
+                  {{ openReadMore? 'Read Less' : 'Read More' }}
+                </VBtn>
+              </div>
+              <p class="text-h6 mb-2">
+                Artists
+              </p>
+              <VRow>
+                <VCol
+                  v-for="artist in data?.artists.split(',')"
+                  :key="artist"
+                  cols="3"
+                  class="d-flex align-center"
+                >
+                  <VIcon
+                    icon="mdi-account-circle"
+                    class="mr-1"
+                    size="30"
+                  />
+                  {{ artist }}
+                </VCol>
+              </VRow>
             </div>
-            <VChip variant="text">
-              <VIcon
-                icon="mdi-clock-outline"
-                class="mr-1"
-              />{{ duration }}
-            </VChip>
           </div>
-          <p class="text-h5 mt-3">
-            {{ data?.title }}
-          </p>
-          <VDivider class="my-5" />
-          <p class="font-weight-thin">
-            {{ data?.description }}
-          </p>
-          <br>
-          <p class="text-h6 mb-2">
-            Artists
-          </p>
-          <VRow>
-            <VCol
-              v-for="artist in data?.artists.split(',')"
-              :key="artist"
-              cols="3"
-              class="d-flex align-center"
-            >
-              <VIcon
-                icon="mdi-account-circle"
-                class="mr-1"
-                size="30"
-              />
-              {{ artist }}
-            </VCol>
-          </VRow>
-        </VCardItem>
-      </v-card>
-    </v-dialog>
+        </VCard>
+      </template>
+    </VDialog>
   </div>
 </template>
 
@@ -90,7 +128,18 @@ interface props {
   data?: movie;
 }
 
+const openReadMore = ref<boolean>(false)
+
 const { data } = defineProps<props>()
+
+const movieDesc = computed(() => {
+  if(data?.description && data.description.length > 500 && !openReadMore.value){
+    return data?.description.substring(0, 500) + '...'
+  }
+
+  return data?.description
+})
+
 
 const duration = computed(() => {
   let hours = 0;
@@ -107,6 +156,11 @@ const duration = computed(() => {
 
   return `${hoursStr}:${minutesStr}:${secondsStr}`;
 })
+
+
+function toggleReadMore(): void {
+  openReadMore.value = !openReadMore.value
+}
 
 
 </script>
