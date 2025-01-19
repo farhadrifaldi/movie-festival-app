@@ -19,6 +19,17 @@ export interface movie {
   view_count?: number;
 }
 
+export interface MovieInput {
+  title: string;
+  description: string;
+  duration: number; // in seconds
+  genres: string;
+  artists: string;
+  release_date: string;
+  url?: string;
+  image?: string;
+}
+
 export const SAMPLE_DATA: movie = {
   title: "CAGE-FACE CASE 1: THE MINE - Alur Cerita Game (Alex Olinkiewicz)",
   image: '/thumbnail.jpg',

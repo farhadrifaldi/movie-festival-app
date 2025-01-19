@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { supabase } from '../plugins' // Import Supabase client
-import { MovieFilter, type movie } from '@/types/movie' // Import movie type
+import { MovieFilter, type movie, type MovieInput } from '@/types/movie' // Import movie type
+import { Databases } from '@/utils/supabase';
 
 export const useMovieStore = defineStore('movie', {
   state: () => ({
@@ -24,7 +25,7 @@ export const useMovieStore = defineStore('movie', {
      * @param {boolean} params.reset - Flag to reset the movie list.
      */
     async fetchMovies({ search = "", page = 1, limit = 8, order = MovieFilter.LAST_UPDATE, reset = false }) {
-      let query = supabase.from('Movies').select('*').range((page - 1) * limit, page * limit - 1);
+      let query = supabase.from(Databases.MOVIES).select('*').range((page - 1) * limit, page * limit - 1);
       let orderBy = 'id';
       this.movieLoading = true
 
@@ -58,12 +59,33 @@ export const useMovieStore = defineStore('movie', {
      * Create a new movie in the Supabase database.
      * @param {movie} movieData - The movie data to be created.
      */
-    async createMovie(movieData: movie) {
+    async createMovie(videoFile: File | null, imageFile: File | null, movieData: MovieInput) {
       this.movieLoading = true
-      const { data, error } = await supabase.from('movies').insert([movieData]);
-      if (error) throw error;
-      this.movieLoading = false
-      if (data) this.movies.push(data[0]); // Add new movie to the state
+
+      try {
+
+        if (imageFile) {
+          const imageUrl = await upload(imageFile, 'image')
+          movieData.image = imageUrl
+        } else {
+          throw new Error('No file provided')
+        }
+
+        // Upload Video
+        if (videoFile) {
+          const videoUrl = await upload(videoFile, 'video')
+          movieData.url = videoUrl
+        } else {
+          throw new Error('No file provided')
+        }
+        const { data, error } = await supabase.from(Databases.MOVIES).insert([movieData]);
+        if (error) throw error;
+        this.movieLoading = false
+        if (data) this.movies.push(data[0]); // Add new movie to the state
+      } catch (error) {
+        throw error
+      }
+      // Upload Video
     },
 
     /**
@@ -73,7 +95,7 @@ export const useMovieStore = defineStore('movie', {
      */
     async updateMovie(movieId: string, updatedData: Partial<movie>) {
       this.movieLoading = true
-      const { error } = await supabase.from('movies').update(updatedData).eq('id', movieId);
+      const { error } = await supabase.from(Databases.MOVIES).update(updatedData).eq('id', movieId);
       if (error) throw error;
       const index = this.movies.findIndex(movie => movie.id === movieId);
       if (index !== -1) {
@@ -87,9 +109,38 @@ export const useMovieStore = defineStore('movie', {
      * @param {string} movieId - The ID of the movie to delete.
      */
     async deleteMovie(movieId: string) {
-      const { error } = await supabase.from('movies').delete().eq('id', movieId);
+      const { error } = await supabase.from(Databases.MOVIES).delete().eq('id', movieId);
       if (error) throw error;
       this.movies = this.movies.filter(movie => movie.id !== movieId); // Remove movie from the state
     },
   },
 });
+
+
+async function upload(file: File, type: 'video' | 'image' = 'video'): Promise<string> {
+
+  const fileName = file.name.split('.')[0] + '-' + new Date().toISOString();
+  const ext = file.name.split('.')[1];
+  const path = `${type}s/${fileName}-${ext}`;
+
+  console.log(path)
+
+  try {
+    const uploadResponse = await supabase.storage.from('movies').upload(path, file, { cacheControl: '3600', upsert: false })
+    const retriveFileResponse = getPublicUrlFile(uploadResponse.data?.path)
+    return retriveFileResponse
+  } catch (error) {
+    throw error
+  }
+}
+
+function getPublicUrlFile(fileData?: string | null): string {
+  if (!fileData) {
+    throw new Error('File Path not provided')
+  } else {
+    const response = supabase.storage.from('movies').getPublicUrl(fileData)
+
+    return response.data.publicUrl
+  }
+
+}
