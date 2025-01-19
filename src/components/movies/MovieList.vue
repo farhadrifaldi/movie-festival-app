@@ -35,7 +35,7 @@
   </VRow>
   <div
     v-if="!isNoData"
-    class="d-flex justify-center"
+    class="d-flex justify-center mt-10"
   >
     <VBtn :loading="false">
       Load More
