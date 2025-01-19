@@ -41,7 +41,12 @@
       Load More
     </VBtn>
   </div>
-  <MovieNoData v-if="isNoData" />
+  <v-empty-state
+    v-if="!store.getLoading && isNoData"
+    title="Movie Not Found"
+    text="The movie you are looking for does not exist."
+    icon="mdi-alert"
+  />
 </template>
 
 <script setup lang="ts">
