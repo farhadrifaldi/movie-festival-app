@@ -1,3 +1,9 @@
+export enum MovieFilter {
+  LAST_UPDATE = 'Last Update',
+  MOST_VIEWED = 'Most Viewed',
+  MOST_RATED = 'Most Rated',
+}
+
 export interface movie {
   id?: string;
   title: string;

@@ -10,6 +10,30 @@
         <p style="margin-bottom: 5px; height: 50px; overflow: hidden; text-overflow: ellipsis;">
           {{ data?.title }}
         </p>
+        <div class="d-flex justify-space-between">
+          <VChip
+            v-if="data?.rating"
+            class="mb-2"
+            variant="text"
+            style="padding: 0;"
+          >
+            <VIcon
+              icon="mdi-star"
+              class="mr-1"
+              color="warning"
+            />{{ data?.rating }}
+          </VChip>
+          <VChip
+            v-if="data?.view_count"
+            variant="text"
+            style="padding: 0;"
+          >
+            <VIcon
+              icon="mdi-eye-circle-outline"
+              class="mr-1"
+            />{{ data?.view_count }}
+          </VChip>
+        </div>
         <div
           v-if="data?.genres"
           style="height: 25px; flex-wrap: nowrap; display: flex;"
@@ -24,20 +48,20 @@
             {{ genre }}
           </VChip>
         </div>
-      </div>
-      <VOverlay
-        :model-value="!!isHovering"
-        class="align-center justify-center"
-        scrim="#036358"
-        contained
-      >
-        <v-btn
-          variant="flat"
-          @click="openDetail"
+        <VOverlay
+          :model-value="!!isHovering"
+          class="align-center justify-center"
+          scrim="#036358"
+          contained
         >
-          See more info
-        </v-btn>
-      </VOverlay>
+          <v-btn
+            variant="flat"
+            @click="openDetail"
+          >
+            See more info
+          </v-btn>
+        </VOverlay>
+      </div>
     </VCard>
   </VHover>
 </template>

@@ -8,7 +8,8 @@
       <VSelect
         v-model="filterBy"
         label="Select"
-        :items="['Most Viewed', 'Most Rated']"
+        :items="FILTER_LIST"
+        @update:model-value="resetPage"
       />
     </div>
     <div style="width: 200px !important;">
@@ -16,7 +17,7 @@
         v-model="search"
         label="Search"
         append-inner-icon="mdi-magnify"
-        @click:append-inner="fetch"
+        @click="fetch"
         @keyup.enter="fetch"
       />
     </div>
@@ -62,9 +63,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useAppStore } from '@/stores'
-import { type movie } from '@/types/movie' // Corrected import path
+import { MovieFilter, type movie } from '@/types/movie' // Corrected import path
 
-const filterList = ['Most Viewed', 'Most Rated']
+const FILTER_LIST = Object.values(MovieFilter)
 
 const store = useAppStore()
 const openDetail = ref(false)
@@ -72,7 +73,7 @@ const movieDetail = ref<movie | undefined>(undefined)
 const movies = ref<movie[]>([])
 
 const search = ref<string>("")
-const filterBy = ref<string>(filterList[0])
+const filterBy = ref<MovieFilter>(FILTER_LIST[0])
 const page = ref<number>(1)
 
 const isNoData = computed(() => movies.value.length < 1)
@@ -81,8 +82,8 @@ onMounted(async () => {
  await fetch()
 })
 
-async function fetch(): Promise<void> {
-  await store.fetchMovies({search: search.value, page: page.value}) // Fetch movies from Supabase
+async function fetch(reset: boolean = false): Promise<void> {
+  await store.fetchMovies({search: search.value, page: page.value, order: filterBy.value, reset: reset}) // Fetch movies from Supabase
   movies.value = store.getMovies // Update local movies with fetched data
 }
 
@@ -95,6 +96,13 @@ function loadMore(): void {
   page.value++
   nextTick((): void => {
     fetch() // fetch after reactive
+  })
+}
+
+function resetPage(): void {
+  page.value = 1
+  nextTick((): void => {
+    fetch(true) // fetch after reactive
   })
 }
 </script>

@@ -2,7 +2,7 @@
 import { createPinia, defineStore } from 'pinia'
 import { supabase } from '../plugins' // Import Supabase client
 import type { User } from '@supabase/supabase-js'
-import type { movie } from '../types/movie' // Import movie type
+import { MovieFilter, type movie } from '../types/movie' // Import movie type
 
 export const useAppStore = defineStore('app', {
   state: () => ({
@@ -28,21 +28,33 @@ export const useAppStore = defineStore('app', {
       if (error) throw error;
       this.user = data.user; // Access user from data
     },
-    async fetchMovies({ search = "", page = 1, limit = 8 }: { search?: string; page?: number; limit?: number }) {
+    async fetchMovies({ search = "", page = 1, limit = 8, order = MovieFilter.LAST_UPDATE, reset = false }: { search?: string; page?: number; limit?: number; order: MovieFilter; reset: boolean }) {
       let query = supabase.from('Movies').select('*').range((page - 1) * limit, page * limit - 1);
+      let orderBy = 'id';
       // let query = supabase.from('Movies').select('*').range(0, 9);
       this.movieLoading = true
+
+      // Filter by title if provided
       if (search && search !== '') {
-        query = query.ilike('title', `%${search}%`); // Filter by title if provided
+        query = query.ilike('title', `%${search}%`);
       }
+
+      if (order === MovieFilter.MOST_RATED) {
+        orderBy = 'rating'
+      } else if (order === MovieFilter.MOST_VIEWED) {
+        orderBy = 'view_count'
+      }
+
+      query.order(orderBy, { ascending: false })
+
       const { data, error } = await query;
       if (error) throw error;
       this.movieLoading = false
 
-      if (this.movies.length > 0) {
-        this.movies = this.movies.concat(data || [])
-      } else {
+      if (this.movies.length <= 0 || reset) {
         this.movies = data || [];
+      } else {
+        this.movies = this.movies.concat(data || [])
       }
 
       if (data && data.length <= 0) this.movieAllLoaded = true
