@@ -10,7 +10,10 @@
           <div
             style="height: 850px;"
           >
-            <VHover v-slot="{ isHovering, props: hoverProps }">
+            <VHover
+              v-if="!play"
+              v-slot="{ isHovering, props: hoverProps }"
+            >
               <VCard v-bind="hoverProps">
                 <VImg :src="data?.image" />
                 <VOverlay
@@ -21,18 +24,30 @@
                 >
                   <VHover v-slot="{ isHovering: isHovering2, props: props2 }">
                     <VBtn
-                      :href="data?.url"
-                      target="_blank"
                       variant="flat"
                       icon="mdi-play"
                       size="100"
                       :color="isHovering2 ? 'red' : ''"
                       v-bind="props2"
+                      @click="play=true"
                     />
                   </VHover>
                 </VOverlay>
               </VCard>
             </VHover>
+            <video
+              v-if="play"
+              style="width: 100%;"
+              controls
+              :autoplay="play"
+              @pause="console.log('ini di pause')"
+              @playing="console.log('ini lagi play')"
+            >
+              <source
+                :src="data?.url"
+                type="video/mp4"
+              >
+            </video>
             <div
               class="px-10 py-5"
             >
@@ -128,7 +143,9 @@ interface props {
   data?: movie;
 }
 
+const play = ref<boolean>(false)
 const openReadMore = ref<boolean>(false)
+
 
 const { data } = defineProps<props>()
 

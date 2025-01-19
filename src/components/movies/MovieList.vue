@@ -1,5 +1,6 @@
 <template>
   <MovieDetail
+    :key="movieDetail?.id"
     v-model="openDetail"
     :data="movieDetail"
   />
