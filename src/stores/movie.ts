@@ -5,16 +5,28 @@ import { Databases } from '@/utils/supabase';
 
 export const useMovieStore = defineStore('movie', {
   state: () => ({
+    movie: null as movie | null,
     movies: [] as movie[], // Define movies using the movie type
     movieLoading: false, // Define loading state for movie
     movieAllLoaded: false // Flag to indicate if all movies have been loaded
   }),
   getters: {
+    getMovie: (state) => state.movie, // Getter to retrieve movies
     getMovies: (state) => state.movies, // Getter to retrieve movies
     getLoading: (state) => state.movieLoading, // Getter to check loading state
     getMovieAllLoaded: (state) => state.movieAllLoaded, // Getter to check if all movies are loaded
   },
   actions: {
+    async fetchMovie({ id }: { id: string }) {
+      this.movieLoading = true
+      const query = supabase.from(Databases.MOVIES).select('*').eq('id', id).range(0, 0);
+
+      const { data, error } = await query;
+      if (error) throw error;
+      this.movieLoading = false
+
+      this.movie = data[0]
+    },
     /**
      * Fetch movies from the Supabase database with optional filters.
      * @param {Object} params - Parameters for fetching movies.
@@ -93,9 +105,20 @@ export const useMovieStore = defineStore('movie', {
      * @param {string} movieId - The ID of the movie to update.
      * @param {Partial<movie>} updatedData - The updated movie data.
      */
-    async updateMovie(movieId: string, updatedData: Partial<movie>) {
+    async updateMovie(videoFile: File | null, imageFile: File | null, movieId: string, updatedData: Partial<movie>) {
       this.movieLoading = true
-      const { error } = await supabase.from(Databases.MOVIES).update(updatedData).eq('id', movieId);
+
+      if (imageFile) {
+        const imageUrl = await upload(imageFile, 'image')
+        updatedData.image = imageUrl
+      }
+      // Upload Video
+      if (videoFile) {
+        const videoUrl = await upload(videoFile, 'video')
+        updatedData.url = videoUrl
+      }
+
+      const { error } = await supabase.from(Databases.MOVIES).update(updatedData).eq('id', movieId).select();
       if (error) throw error;
       const index = this.movies.findIndex(movie => movie.id === movieId);
       if (index !== -1) {

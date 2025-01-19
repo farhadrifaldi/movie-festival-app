@@ -9,6 +9,6 @@
     >
       Add New Movies
     </VBtn>
-    <MovieList /><!-- MovieList component -->
+    <MovieList :is-editable="true" /><!-- MovieList component -->
   </VContainer>
 </template>

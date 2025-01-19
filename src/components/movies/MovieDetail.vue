@@ -126,6 +126,13 @@
                 </VCol>
               </VRow>
             </div>
+            <VCardActions v-if="showEditBtn">
+              <VBtn
+                :to="{name: '/admin/movie/update/:id', params: {id: data?.id}}"
+              >
+                Edit
+              </VBtn>
+            </VCardActions>
           </div>
         </VCard>
       </template>
@@ -141,13 +148,14 @@ const model = defineModel<boolean>();
 
 interface props {
   data?: movie;
+  showEditBtn?: boolean;
 }
 
 const play = ref<boolean>(false)
 const openReadMore = ref<boolean>(false)
 
 
-const { data } = defineProps<props>()
+const { data, showEditBtn } = defineProps<props>()
 
 const movieDesc = computed(() => {
   if(data?.description && data.description.length > 500 && !openReadMore.value){

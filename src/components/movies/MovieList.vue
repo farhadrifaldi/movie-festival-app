@@ -3,6 +3,7 @@
     :key="movieDetail?.id"
     v-model="openDetail"
     :data="movieDetail"
+    :show-edit-btn="isEditable"
   />
   <div class="d-flex justify-space-between">
     <div>
@@ -64,6 +65,8 @@ import { useMovieStore } from '@/stores'; // Updated import
 import { MovieFilter, type movie } from '@/types/movie'; // Corrected import path
 
 const FILTER_LIST = Object.values(MovieFilter)
+
+const {isEditable} = defineProps<{isEditable?: boolean}>()
 
 const store = useMovieStore(); // Updated store reference
 const openDetail = ref(false);
