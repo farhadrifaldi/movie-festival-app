@@ -34,10 +34,7 @@
       />
     </VCol>
   </VRow>
-  <div
-
-    class="d-flex justify-center mt-10"
-  >
+  <div class="d-flex justify-center mt-10">
     <VProgressCircular
       v-if="store.getLoading && movies.length <= 0"
       indeterminate
@@ -61,49 +58,49 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useAppStore } from '@/stores'
-import { MovieFilter, type movie } from '@/types/movie' // Corrected import path
+import { ref, onMounted, computed, nextTick } from 'vue'
+import { useMovieStore } from '@/stores/movie'; // Updated import
+import { MovieFilter, type movie } from '@/types/movie'; // Corrected import path
 
 const FILTER_LIST = Object.values(MovieFilter)
 
-const store = useAppStore()
-const openDetail = ref(false)
-const movieDetail = ref<movie | undefined>(undefined)
-const movies = ref<movie[]>([])
+const store = useMovieStore(); // Updated store reference
+const openDetail = ref(false);
+const movieDetail = ref<movie | undefined>(undefined);
+const movies = ref<movie[]>([]);
 
-const search = ref<string>("")
-const filterBy = ref<MovieFilter>(FILTER_LIST[0])
-const page = ref<number>(1)
+const search = ref<string>("");
+const filterBy = ref<MovieFilter>(FILTER_LIST[0]);
+const page = ref<number>(1);
 
-const isNoData = computed(() => movies.value.length < 1)
+const isNoData = computed(() => movies.value.length < 1);
 
 onMounted(async () => {
- await fetch()
-})
+ await fetch();
+});
 
 async function fetch(reset: boolean = false): Promise<void> {
-  await store.fetchMovies({search: search.value, page: page.value, order: filterBy.value, reset: reset}) // Fetch movies from Supabase
-  movies.value = store.getMovies // Update local movies with fetched data
+  await store.fetchMovies({search: search.value, page: page.value, order: filterBy.value, reset: reset}); // Fetch movies from Supabase
+  movies.value = store.getMovies; // Update local movies with fetched data
 }
 
 function onOpenDetail(id?: string): void {
-  openDetail.value = true
-  movieDetail.value = movies.value.find((v: movie) => v?.id === id) // Explicitly typed parameter
+  openDetail.value = true;
+  movieDetail.value = movies.value.find((v: movie) => v?.id === id); // Explicitly typed parameter
 }
 
 function loadMore(): void {
-  page.value++
+  page.value++;
   nextTick((): void => {
-    fetch() // fetch after reactive
-  })
+    fetch(); // fetch after reactive
+  });
 }
 
 function resetPage(): void {
-  page.value = 1
+  page.value = 1;
   nextTick((): void => {
-    fetch(true) // fetch after reactive
-  })
+    fetch(true); // fetch after reactive
+  });
 }
 </script>
 
