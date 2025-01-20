@@ -37,6 +37,12 @@ router.isReady().then(() => {
 router.beforeEach(async (to) => {
   const store = useUserStore()
   const isAuthenticated = store.getIsAuthenticated
+  if (to.path === '/' && isAuthenticated) {
+    return { path: '/user/movie' }
+  } else if (to.path === '/' && !isAuthenticated) {
+    return { path: '/auth/login' }
+  }
+
   if (to.path.includes('auth') && isAuthenticated) {
     return { name: '/user/movie/' }
   } else if (to.path.includes('user') && !isAuthenticated) {
