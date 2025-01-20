@@ -19,8 +19,8 @@
         v-model="search"
         label="Search"
         append-inner-icon="mdi-magnify"
-        @click="fetch"
-        @keyup.enter="fetch"
+        @click="fetch(true)"
+        @keyup.enter="fetch(true)"
       />
     </div>
   </div>
