@@ -7,7 +7,7 @@ const ADMIN_EMAIL = 'admin@admin.com';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    user: storage ? JSON.parse(storage) : null as User | null, // Define user as User type or null
+    user: (storage ? JSON.parse(storage) : null) as User | null, // Define user as User type or null
   }),
   getters: {
     getUser: (state) => state.user,
