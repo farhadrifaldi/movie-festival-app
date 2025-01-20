@@ -43,7 +43,7 @@ export const useMovieStore = defineStore('movie', {
 
       // Filter by title if provided
       if (search && search !== '') {
-        query = query.ilike('title', `%${search}%`);
+        query = query.or(`title.ilike."*${search}*", genres.ilike."*${search}*", artists.ilike."*${search}*"`)
       }
 
       if (order === MovieFilter.MOST_RATED) {
