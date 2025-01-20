@@ -75,7 +75,6 @@ export const useMovieStore = defineStore('movie', {
       this.movieLoading = true
 
       try {
-
         if (imageFile) {
           const imageUrl = await upload(imageFile, 'image')
           movieData.image = imageUrl
