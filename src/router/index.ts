@@ -8,6 +8,7 @@
 import { createRouter, createWebHistory } from 'vue-router/auto'
 import { setupLayouts } from 'virtual:generated-layouts'
 import { routes } from 'vue-router/auto-routes'
+import { useUserStore } from '@/stores/user'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,4 +34,15 @@ router.isReady().then(() => {
   localStorage.removeItem('vuetify:dynamic-reload')
 })
 
+router.beforeEach(async (to) => {
+  const store = useUserStore()
+  const isAuthenticated = store.getIsAuthenticated
+  if (to.path.includes('auth') && isAuthenticated) {
+    return { name: '/user/movie/' }
+  } else if (to.path.includes('user') && !isAuthenticated) {
+    return { name: '/auth/login' }
+  } else if (to.path.includes('admin') && (!isAuthenticated || (isAuthenticated && !store.getIsAdmin))) {
+    return { name: '/auth/login' }
+  }
+})
 export default router
