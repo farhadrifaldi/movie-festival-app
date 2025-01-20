@@ -1,3 +1,3 @@
 export enum Databases {
-  MOVIES = 'Movies'
+  MOVIES = 'movies'
 }
