@@ -12,26 +12,27 @@
       <v-icon icon="mdi-logout" />
     </v-btn>
   </v-app-bar>
-  <v-navigation-drawer v-model="drawer">
+  <VNavigationDrawer
+    v-if="store.getIsAuthenticated"
+    v-model="drawer"
+  >
     <v-list-item
-      prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
-      subtitle="sandra_a88@gmailcom"
-      title="Sandra Adams"
+      prepend-avatar="https://randomuser.me/api/portraits/men/75.jpg"
+      :subtitle="store.getUser?.email"
     />
     <v-divider />
     <v-list-item
+      v-if="store.getIsAdmin"
       link
-      title="List Item 1"
+      :to="{name: '/admin/movie/'}"
+      title="CRUD Movies"
     />
     <v-list-item
       link
-      title="List Item 2"
+      :to="{name: '/user/movie/'}"
+      title="Movies"
     />
-    <v-list-item
-      link
-      title="List Item 3"
-    />
-  </v-navigation-drawer>
+  </VNavigationDrawer>
   <v-main>
     <div style="padding: 20 !important">
       <router-view />
